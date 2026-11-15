@@ -11,6 +11,7 @@ files:
     content_segmentation: 0
     ignore:
       - /apps/site/pages/en/blog/**/*.md
+      - /apps/site/pages/en/learn/**/*.md
       - /apps/site/pages/en/download/index.md
       - /apps/site/pages/en/download/current.md
     languages_mapping:
@@ -24,6 +25,7 @@ files:
     content_segmentation: 0
     ignore:
       - /apps/site/pages/en/blog/**/*.mdx
+      - /apps/site/pages/en/learn/**/*.mdx
     languages_mapping:
       two_letters_code:
         es-ES: es
@@ -40,8 +42,8 @@ files:
         pt-BR: pt-br
         zh-CN: zh-cn
         zh-TW: zh-tw
-  - source: /packages/i18n/src/locales/en.json
-    translation: /packages/i18n/src/locales/%two_letters_code%.json
+  - source: /packages/i18n/locales/en.json
+    translation: /packages/i18n/locales/%two_letters_code%.json
     languages_mapping:
       two_letters_code:
         es-ES: es

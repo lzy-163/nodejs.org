@@ -1,52 +1,88 @@
-import eslintReact from '@eslint-react/eslint-plugin';
-import next from '@next/eslint-plugin-next';
+import { FlatCompat } from '@eslint/eslintrc';
+import importX from 'eslint-plugin-import-x';
 import * as mdx from 'eslint-plugin-mdx';
+import react from 'eslint-plugin-react';
+import tseslint from 'typescript-eslint';
 
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
 import baseConfig from '../../eslint.config.js';
 
-export default baseConfig.concat([
-  {
-    ignores: ['pages/en/blog/**/*.{md,mdx}/**', 'public', 'next-env.d.ts'],
-  },
+const compat = new FlatCompat();
 
-  eslintReact.configs['recommended-typescript'],
-  next.configs.recommended,
-  mdx.flatCodeBlocks,
+const compatConfig = compat.config({
+  extends: [
+    // https://github.com/vercel/next.js/discussions/49337
+    'plugin:@next/eslint-plugin-next/core-web-vitals',
 
-  // Type-checking
+    // https://github.com/facebook/react/issues/28313
+    'plugin:react-hooks/recommended',
+  ],
+});
+
+export default tseslint.config(
+  ...baseConfig,
   {
-    ignores: ['**/*.{md,mdx}', '**/*.{md,mdx}/**'],
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
+    extends: [
+      react.configs.flat['jsx-runtime'],
+      ...tseslint.configs.recommended,
+      importX.flatConfigs.typescript,
+      ...compatConfig,
+    ],
+    files: ['**/*.{js,md,mdx,mjs,ts,tsx}'],
     rules: {
+      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
       '@typescript-eslint/consistent-type-imports': 'error',
-    },
-  },
-
-  {
-    files: ['**/*.{md,mdx}/**'],
-    rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      '@next/next/no-duplicate-head': 'off',
+      'import-x/no-duplicates': 'off',
     },
+    settings: { react: { version: 'detect' } },
   },
-
   {
-    // TODO: Enable validate-links for translations once their routes and
-    // anchors are kept in sync with the English content.
-    ...mdx.flat,
-    processor: mdx.createRemarkProcessor({ lintCodeBlocks: true }),
+    files: ['**/*.{md,mdx}'],
+    extends: [mdx.configs.flat],
     rules: {
-      ...mdx.flat.rules,
-      // Components used in MDX are never imported; they are injected by our
-      // compiler from `mdx/components.mjs`, so they are never in lexical scope.
-      'no-undef': 'off',
       'no-irregular-whitespace': 'off',
       '@next/next/no-img-element': 'off',
       '@next/next/no-html-link-for-pages': ['error', 'apps/site/pages/'],
+
+      // https://github.com/typescript-eslint/typescript-eslint/issues/9860
+      '@typescript-eslint/consistent-type-imports': 'off',
     },
   },
-]);
+  {
+    files: ['**/*.{mdx,tsx}'],
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      'react/no-unescaped-entities': 'off',
+      'react/function-component-definition': [
+        'error',
+        {
+          namedComponents: 'arrow-function',
+          unnamedComponents: 'arrow-function',
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "ImportDeclaration[source.value='react'][specifiers.0.type='ImportDefaultSpecifier']",
+          message:
+            'Default React import not allowed since we use the TypeScript jsx-transform. If you need a global type that collides with a React named export (such as `MouseEvent`), try using `globalThis.MouseHandler`',
+        },
+        {
+          selector:
+            "ImportDeclaration[source.value='react'] :matches(ImportNamespaceSpecifier)",
+          message:
+            'Named * React import is not allowed. Please import what you need from React with Named Imports',
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/*.mjs', '**/*.test.*'],
+    rules: {
+      'no-relative-import-paths/no-relative-import-paths': 'off',
+    },
+  }
+);

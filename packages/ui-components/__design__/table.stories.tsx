@@ -1,9 +1,9 @@
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
+import type { Meta as MetaObj, StoryObj } from '@storybook/react';
 
 const tableData = [
-  { id: 'row-1', cells: ['Data 1', 'Data 2', 'Data 3'] },
-  { id: 'row-2', cells: ['Data 1', 'Data 2', 'Data 3'] },
-  { id: 'row-3', cells: ['Data 1', 'Data 2', 'Data 3'] },
+  ['Data 1', 'Data 2', 'Data 3'],
+  ['Data 1', 'Data 2', 'Data 3'],
+  ['Data 1', 'Data 2', 'Data 3'],
 ];
 
 export const Table: StoryObj = {
@@ -12,41 +12,37 @@ export const Table: StoryObj = {
       <table>
         <thead>
           <tr>
-            {['Column 1', 'Column 2', 'Column 3'].map(col => (
-              <th key={col}>{col}</th>
+            {['Column 1', 'Column 2', 'Column 3'].map((col, idx) => (
+              <th key={idx}>{col}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {tableData.map(row => (
-            <tr key={row.id}>
-              {row.cells.map(cell => (
-                <td key={`${row.id}-${cell}`}>{cell}</td>
+          {tableData.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex}>{cell}</td>
               ))}
             </tr>
           ))}
-          <tr>
-            <td colSpan={3}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Sub 1</th>
-                    <th>Sub 2</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Sub A</td>
-                    <td>Sub B</td>
-                  </tr>
-                  <tr>
-                    <td>Sub C</td>
-                    <td>Sub D</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
+        </tbody>
+      </table>
+    </main>
+  ),
+};
+
+export const HeadlessTable: StoryObj = {
+  render: () => (
+    <main>
+      <table>
+        <tbody>
+          {tableData.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex}>{cell}</td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </main>

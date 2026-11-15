@@ -1,26 +1,24 @@
-import type { BlogCategory } from './blog';
-
-export type RSSFeed = {
+export interface RSSFeed {
   file: string;
   title: string;
-  category: BlogCategory;
+  category: string;
   description?: string;
-};
+}
 
-type WithRange = {
+interface WithRange {
   startDate: string;
   endDate: string;
-};
+}
 
-export type WebsiteBanner = {
+export interface WebsiteBanner extends WithRange {
   text: string;
   link?: string;
   type?: 'default' | 'warning' | 'error';
-} & WithRange;
+}
 
-export type WebsiteBadge = {
+export interface WebsiteBadge extends WithRange {
   text: string;
   link: string;
   title?: string;
   kind?: 'default' | 'warning' | 'error';
-} & WithRange;
+}

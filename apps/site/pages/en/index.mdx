@@ -4,7 +4,7 @@ layout: home
 ---
 
 <section>
-  <WebsiteBadge section="index" />
+  <WithBadge section="index" />
 
   <div>
     <h1 className="special">Run JavaScript Everywhere</h1>
@@ -14,24 +14,29 @@ layout: home
 
   </div>
 
-  <div className="flex gap-4">
+  <div>
+    <WithNodeRelease status={['LTS']}>
+      {({ release }) => (
+        <>
+          <DownloadButton release={release}>Download Node.js (LTS)</DownloadButton>
+          <small>
+            Downloads Node.js <b>{release.versionWithPrefix}</b>
+            <sup title="Downloads a Node.js installer for your current platform">1</sup> with long-term support.
+            Node.js can also be installed via <Link href="/download">version managers</Link>.
+          </small>
+        </>
+      )}
+    </WithNodeRelease>
 
-    <div className="flex flex-col gap-2">
-      <Button kind="special" className="!hidden dark:!block" href="/download">Get Node.js®</Button>
-
-      <Button kind="primary" className="!block dark:!hidden" href="/download">Get Node.js®</Button>
-
-      <Button kind="secondary" className="!block" href="/about/eol">
-        <span>Get security support</span>
-        <br />
-        <small className="!text-xs">for EOL Node.js versions</small>
-      </Button>
-
-      <div className="flex justify-center ml:mt-3">
-        <PartnersList sort="weight" />
-      </div>
-      <span className="text-center text-sm! text-neutral-800 dark:text-neutral-600 text-balance">Node.js is proudly supported by the partners above <Link href="/about/partners">and more</Link>.</span>
-    </div>
+    <WithNodeRelease status={['Current']}>
+      {({ release }) => (
+        <small>
+          Want new features sooner?
+          Get <b>Node.js <DownloadLink release={release}>{release.versionWithPrefix}</DownloadLink></b>
+          <sup title="Downloads a Node.js installer for your current platform">1</sup> instead.
+        </small>
+      )}
+    </WithNodeRelease>
 
   </div>
 </section>
@@ -91,17 +96,17 @@ layout: home
 
     ```js displayName="Streams Pipeline"
     // streams.mjs
-    import { createReadStream, createWriteStream } from 'node:fs';
     import { pipeline } from 'node:stream/promises';
+    import { createReadStream, createWriteStream } from 'node:fs';
     import { createGzip } from 'node:zlib';
 
     // ensure you have a `package.json` file for this test!
-    await pipeline(
+    await pipeline
+    (
       createReadStream('package.json'),
       createGzip(),
       createWriteStream('package.json.gz')
     );
-
 
     // run with `node streams.mjs`
     ```

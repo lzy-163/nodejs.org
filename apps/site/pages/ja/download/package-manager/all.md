@@ -43,21 +43,7 @@ pacman -S nodejs npm
 
 ## CentOS, Fedora and Red Hat Enterprise Linux
 
-Node.jsとnpmパッケージはFedoraとRHEL 10のメインリポジトリで利用可能です。
-
-デフォルトのストリームからインストールできます。このストリームには現在Active LTSのNode.jsバージョンが含まれています。
-
-```bash
-dnf install nodejs npm
-```
-
-または代替となる保守版（Fedoraと各種RHELリリース間で保守版が異なる場合はあります）の特定のストリームからインストールできます。
-
-```bash
-dnf install nodejs24
-```
-
-古いバージョンのCentOSやRHELではNode.jsは `nodejs` というモジュールとして利用可能です。
+CentOS/RHEL 8とFedoraでは`nodejs`というモジュールとしてNode.jsが利用できます。
 
 ```bash
 dnf module install nodejs:<stream>
@@ -351,7 +337,7 @@ sudo eopkg install nodejs
 
 主要なシェル環境（Bash、Zsh、Fish、PowerShell、Clink、Cmder）をサポートしています。
 
-[クイックスタート](https://vfox.dev/guides/quick-start.html)や詳しい使い方を確認してください。
+vfoxを迅速に使用するための[クイックスタート](https://vfox.lhan.me/guides/quick-start.html)を参照し、すべての使用詳細を確認してください。
 
 ## Void Linux
 

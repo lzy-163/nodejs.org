@@ -43,21 +43,7 @@ pacman -S nodejs npm
 
 ## CentOS, Fedora та Red Hat Enterprise Linux
 
-Node.js та пакети npm доступні в головному репозиторії для Fedora та RHEL 10.
-
-Його можна встановити зі стандартного потоку, який містить версію Node.js на стадії Active LTS.
-
-```bash
-dnf install nodejs npm
-```
-
-Або з іншого потоку для альтернативних підтримуваних версій (підтримувані версії можуть відрізнятися між Fedora та різними релізами RHEL).
-
-```bash
-dnf install nodejs24
-```
-
-Для старіших релізів для CentOS чи RHEL Node.js доступний як модуль із назвою `nodejs`.
+Node.js доступний як модуль із назвою `nodejs` у CentOS/RHEL 8 та Fedora.
 
 ```bash
 dnf module install nodejs:<stream>
@@ -355,7 +341,7 @@ sudo eopkg install nodejs
 
 Підтримує всі популярні оболонки (Bash, Zsh, Fish, PowerShell, Clink, Cmder).
 
-Перегляньте [швидкий старт](https://vfox.dev/guides/quick-start.html), щоб почати використовувати vfox та дізнатися всі деталі його використання.
+Перегляньте [швидкий старт](https://vfox.lhan.me/guides/quick-start.html), щоб почати використовувати vfox та дізнатися всі деталі його використання.
 
 ## Void Linux
 

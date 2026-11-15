@@ -4,11 +4,8 @@ ${props.os === 'WIN' ?
   'curl -o- https://fnm.vercel.app/install | bash'
 }
 
-# In lieu of restarting the shell
-${props.os === 'WIN' ?
-  'fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression' :
-  'export PATH="$HOME/.local/share/fnm:$PATH"\neval "$(fnm env)"'
-}
-
 # Download and install Node.js:
-fnm install --use ${props.release.major}
+fnm install ${props.release.major}
+
+# Verify the Node.js version:
+node -v # Should print "${props.release.versionWithPrefix}".

@@ -2,30 +2,29 @@
   "$schema": "https://turbo.build/schema.json",
   "dangerouslyDisablePackageManagerCheck": true,
   "tasks": {
-    "//#lint:i18n": {
-      "inputs": [".eloqnt/**", "apps/site/**", "packages/i18n/src/**"]
+    "scripts:release-post": {
+      "cache": false
     },
     "//#prettier": {
       "outputs": [".prettiercache"]
     },
-    "//#prettier:fix": {
-      "outputs": [".prettiercache"]
-    },
-    "build": {
-      "dependsOn": ["^topo"],
-      "outputs": ["dist/**"]
-    },
     "lint": {
-      "dependsOn": ["^topo"]
+      "dependsOn": [
+        "@node-core/website#lint:md",
+        "@node-core/website#lint:snippets",
+        "@node-core/website#lint:css",
+        "lint:js"
+      ]
     },
-    "prettier": {
-      "inputs": ["**/*.{js,mjs,ts,tsx,md,mdx,json,yml,css}"],
-      "outputs": [".prettiercache"]
+    "lint:lint-staged": {
+      "dependsOn": [
+        "@node-core/website#lint:md",
+        "@node-core/website#lint:snippets",
+        "@node-core/website#lint:css",
+        "@node-core/website#lint:js"
+      ]
     },
-    "prettier:fix": {
-      "dependsOn": ["^prettier"]
-    },
-    "test": {
+    "check-types": {
       "dependsOn": ["^topo"]
     },
     "topo": {

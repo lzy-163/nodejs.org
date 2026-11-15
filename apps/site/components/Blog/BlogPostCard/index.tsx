@@ -1,13 +1,12 @@
 import Preview from '@node-core/ui-components/Common/Preview';
 import { useTranslations } from 'next-intl';
-
-import AvatarGroup from '#site/components/AvatarGroup';
-import FormattedTime from '#site/components/Common/FormattedTime';
-import Link from '#site/components/Link';
-import { mapBlogCategoryToPreviewType } from '#site/util/blog';
-
-import type { BlogCategory } from '#site/types';
 import type { FC } from 'react';
+
+import FormattedTime from '@/components/Common/FormattedTime';
+import Link from '@/components/Link';
+import WithAvatarGroup from '@/components/withAvatarGroup';
+import type { BlogCategory } from '@/types';
+import { mapBlogCategoryToPreviewType } from '@/util/blogUtils';
 
 import styles from './index.module.css';
 
@@ -16,7 +15,7 @@ type BlogPostCardProps = {
   category: BlogCategory;
   description?: string;
   authors?: Array<string>;
-  date?: string | Date;
+  date?: Date;
   slug?: string;
 };
 
@@ -49,7 +48,7 @@ const BlogPostCard: FC<BlogPostCardProps> = ({
       {description && <p className={styles.description}>{description}</p>}
 
       <footer className={styles.footer}>
-        <AvatarGroup names={authors} size="medium" clickable={false} />
+        <WithAvatarGroup names={authors} size="medium" clickable={false} />
 
         <div className={styles.author}>
           {authors && <p>{authors.join(', ')}</p>}

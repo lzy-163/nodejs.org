@@ -1,13 +1,13 @@
-export type ZonedCalendarTime = {
+export interface ZonedCalendarTime {
   dateTime: string;
   timeZone: string;
-};
+}
 
-export type SimpleCalendarTime = {
+export interface SimpleCalendarTime {
   date: string;
-};
+}
 
-export type CalendarEvent = {
+export interface CalendarEvent {
   id: string;
   summary: string;
   location?: string;
@@ -16,4 +16,4 @@ export type CalendarEvent = {
   end: ZonedCalendarTime | SimpleCalendarTime;
   htmlLink: string;
   description?: string;
-};
+}

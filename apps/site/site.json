@@ -1,6 +1,6 @@
 {
   "title": "Node.js",
-  "description": "Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts.",
+  "description": "Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.",
   "favicon": "/static/images/favicons/favicon.png",
   "accentColor": "#333",
   "twitter": {
@@ -28,21 +28,21 @@
   ],
   "websiteBanners": {
     "index": {
-      "startDate": "2026-11-11T00:00:00.000Z",
-      "endDate": "2026-11-18T00:00:00.000Z",
-      "text": "November Security Release is available",
-      "link": "https://nodejs.org/en/blog/vulnerability/november-2026-security-releases",
-      "type": "warning"
+      "startDate": "2025-03-17T00:00:00.000Z",
+      "endDate": "2025-04-17T00:00:00.000Z",
+      "text": "Node.js launches an official Discord community",
+      "link": "https://nodejs.org/en/blog/announcements/official-discord-launch-announcement",
+      "type": "default"
     }
   },
   "websiteBadges": {
     "index": {
-      "startDate": "2026-08-17T00:00:00.000Z",
-      "endDate": "2026-09-18T00:00:00.000Z",
+      "startDate": "2024-11-01T00:00:00.000Z",
+      "endDate": "2024-12-31T00:00:00.000Z",
       "kind": "default",
-      "title": "Be Heard",
-      "text": "Take the Node.js User Survey 2026",
-      "link": "https://linuxfoundation.surveymonkey.com/r/nodejs-users-2026"
+      "title": "Read",
+      "text": "Node.js Collab Summit Report",
+      "link": "https://nodejs.org/en/blog/events/collab-summit-2024-dublin"
     }
   }
 }

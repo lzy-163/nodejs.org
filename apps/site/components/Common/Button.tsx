@@ -1,10 +1,12 @@
-import BaseButton from '@node-core/ui-components/Common/BaseButton';
+import BaseButton, {
+  type ButtonProps,
+} from '@node-core/ui-components/Common/BaseButton';
+import type { FC, ComponentProps } from 'react';
 
-import Link from '#site/components/Link';
+import Link from '@/components/Link';
 
-import type { ButtonProps } from '@node-core/ui-components/Common/BaseButton';
-import type { FC } from 'react';
-
-const Button: FC<ButtonProps> = props => <BaseButton as={Link} {...props} />;
+const Button: FC<
+  Omit<ButtonProps, 'as'> & Omit<ComponentProps<typeof Link>, 'as' | 'size'>
+> = props => <BaseButton as={Link} {...props} />;
 
 export default Button;

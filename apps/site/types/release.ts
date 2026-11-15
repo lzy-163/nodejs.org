@@ -1,59 +1,59 @@
-import type { DownloadSnippet } from '#site/types/download';
-import type { NodeRelease } from '#site/types/releases';
-import type { OperatingSystem, Platform } from '#site/types/userAgent';
+import type { DownloadSnippet } from '@/types/downloads';
+import type { NodeRelease } from '@/types/releases';
+import type { UserOS, UserPlatform } from '@/types/userOS';
 
 export type InstallationMethod =
   | 'NVM'
   | 'FNM'
+  | 'VOLTA'
   | 'BREW'
+  | 'DEVBOX'
   | 'DOCKER'
   | 'CHOCO'
-  | 'N'
-  | 'ASDF'
-  | 'VP'
-  | 'ZEROINSTALL';
+  | 'N';
 export type PackageManager = 'NPM' | 'YARN' | 'PNPM';
 
 // Items with a pipe/default value mean that they are auto inferred
 // during runtime and do not have necessarily a consistent initial value
-export type ReleaseState = {
+export interface ReleaseState {
   version: string;
-  os: OperatingSystem | 'LOADING';
-  platform: Platform | '';
+  os: UserOS | 'LOADING';
+  platform: UserPlatform | '';
   installMethod: InstallationMethod | '';
   packageManager: PackageManager;
-};
+}
 
 export type ReleaseAction =
   | { type: 'SET_VERSION'; payload: string }
-  | { type: 'SET_OS'; payload: OperatingSystem }
-  | { type: 'SET_PLATFORM'; payload: Platform }
+  | { type: 'SET_OS'; payload: UserOS }
+  | { type: 'SET_PLATFORM'; payload: UserPlatform }
   | { type: 'SET_INSTALL_METHOD'; payload: InstallationMethod }
   | { type: 'SET_MANAGER'; payload: PackageManager };
 
-export type ReleaseDispatchActions = {
+export interface ReleaseDispatchActions {
   setVersion: (version: string) => void;
-  setOS: (os: OperatingSystem) => void;
-  setPlatform: (bitness: Platform) => void;
+  setOS: (os: UserOS) => void;
+  setPlatform: (bitness: UserPlatform) => void;
   setInstallMethod: (installMethod: InstallationMethod) => void;
   setPackageManager: (packageManager: PackageManager) => void;
-};
+}
 
-export type ReleasesContextType = {
+export interface ReleasesContextType {
   releases: Array<NodeRelease>;
   snippets: Array<DownloadSnippet>;
-};
+}
 
-export type ReleaseContextType = {
+export interface ReleaseContextType
+  extends ReleaseState,
+    ReleaseDispatchActions {
   release: NodeRelease;
-} & ReleaseState &
-  ReleaseDispatchActions;
+}
 
-export type ReleasesProviderProps = {
+export interface ReleasesProviderProps {
   releases: Array<NodeRelease>;
   snippets: Array<DownloadSnippet>;
-};
+}
 
-export type ReleaseProviderProps = {
+export interface ReleaseProviderProps {
   initialRelease?: NodeRelease;
-};
+}

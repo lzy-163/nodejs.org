@@ -42,7 +42,6 @@ _Also_, there’s a third use case that I didn’t really appreciate until I sta
 <!-- markdownlint-disable ol-prefix -->
 
 3. Globally install something, and use it in development in a bunch of projects, and then update them all at once so that they all use the latest version.
-
 <!-- markdownlint-enable ol-prefix -->
 
 Really, the second case above is a special-case of this third case.
@@ -107,7 +106,7 @@ I highly doubt that a native Windows node will ever have comparable symbolic lin
 
 When there is a native windows port of Node, if that native windows port has `fs.symlink` and `fs.readlink` support that is exactly identical to the way that they work on Unix, then this should work fine.
 
-But I wouldn't hold my breath. Any bugs about this not working on a native Windows system (i.e., not Cygwin) will most likely be closed with `wontfix`.
+But I wouldn't hold my breath. Any bugs about this not working on a native Windows system (ie, not Cygwin) will most likely be closed with `wontfix`.
 
 ## <!-- aside_credit_where_credit8217s_due -->Aside: Credit where Credit’s Due
 

@@ -1,14 +1,13 @@
 'use client';
 
-import { use } from 'react';
-
-import Link from '#site/components/Link';
-import { ReleaseContext } from '#site/providers/releaseProvider';
-
 import type { FC, PropsWithChildren } from 'react';
+import { useContext } from 'react';
+
+import Link from '@/components/Link';
+import { ReleaseContext } from '@/providers/releaseProvider';
 
 const BlogPostLink: FC<PropsWithChildren> = ({ children }) => {
-  const { release } = use(ReleaseContext);
+  const { release } = useContext(ReleaseContext);
   const version = release.versionWithPrefix;
 
   return <Link href={`/blog/release/${version}`}>{children}</Link>;

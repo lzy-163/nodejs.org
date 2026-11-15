@@ -1,15 +1,17 @@
 'use client';
 
-import { createContext, use, useEffect, useMemo, useReducer } from 'react';
-
-import reducer, {
-  getActions,
-  releaseState,
-} from '#site/reducers/releaseReducer';
-
-import type { NodeRelease } from '#site/types';
-import type * as Types from '#site/types/release';
 import type { PropsWithChildren, FC } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
+
+import reducer, { getActions, releaseState } from '@/reducers/releaseReducer';
+import type { NodeRelease } from '@/types';
+import type * as Types from '@/types/release';
 
 export const ReleasesContext = createContext<Types.ReleasesContextType>({
   releases: [],
@@ -25,14 +27,16 @@ export const ReleaseContext = createContext<Types.ReleaseContextType>({
 export const ReleasesProvider: FC<
   PropsWithChildren<Types.ReleasesProviderProps>
 > = ({ children, releases, snippets }) => (
-  <ReleasesContext value={{ releases, snippets }}>{children}</ReleasesContext>
+  <ReleasesContext.Provider value={{ releases, snippets }}>
+    {children}
+  </ReleasesContext.Provider>
 );
 
 export const ReleaseProvider: FC<
   PropsWithChildren<Types.ReleaseProviderProps>
 > = ({ children, initialRelease }) => {
-  const { releases } = use(ReleasesContext);
-  const parentProvider = use(ReleaseContext);
+  const { releases } = useContext(ReleasesContext);
+  const parentProvider = useContext(ReleaseContext);
 
   const [state, dispatch] = useReducer(reducer, {
     ...releaseState,
@@ -52,19 +56,19 @@ export const ReleaseProvider: FC<
       actions.setVersion(parentProvider.version);
     }
     // We should only react if the parentProvider changes
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actions, parentProvider]);
 
   const release = useMemo(
     () => releases.find(r => r.versionWithPrefix === state.version)!,
     // Memoizes the release based on the version
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [state.version]
   );
 
   return (
-    <ReleaseContext value={{ ...state, ...actions, release }}>
+    <ReleaseContext.Provider value={{ ...state, ...actions, release }}>
       {children}
-    </ReleaseContext>
+    </ReleaseContext.Provider>
   );
 };
