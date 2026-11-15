@@ -1,4 +1,4 @@
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
+import type { Meta as MetaObj, StoryObj } from '@storybook/react';
 
 export const H1Special: StoryObj = {
   render: () => <h1 className="special">Special H1</h1>,

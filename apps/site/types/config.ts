@@ -1,21 +1,21 @@
 import type { RSSFeed, WebsiteBadge, WebsiteBanner } from './features';
 
-export type TwitterConfig = {
+export interface TwitterConfig {
   username: string;
   card: string;
   img: string;
   imgAlt: string;
-};
+}
 
-export type OGConfig = {
+export interface OGConfig {
   imgType: string;
   imgWidth: string;
   imgHeight: string;
-};
+}
 
 export type LogoVariant = 'default' | 'pride';
 
-export type SiteConfig = {
+export interface SiteConfig {
   title: string;
   description: string;
   featuredImage: string;
@@ -28,4 +28,4 @@ export type SiteConfig = {
   rssFeeds: Array<RSSFeed>;
   websiteBanners: Record<string, WebsiteBanner>;
   websiteBadges: Record<string, WebsiteBadge>;
-};
+}

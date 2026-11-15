@@ -1,19 +1,13 @@
-import { existsSync } from 'fs';
 import { extname } from 'path';
-import { fileURLToPath } from 'url';
 
 const requiredCode = `import * as React from 'react';`;
 const css = new URL('mocks/css.mjs', import.meta.url).href;
-
-const indexFiles = ['index.tsx', 'index.ts', 'index.mjs', 'index.js'];
 
 /**
  *
  * This hook intercepts module resolution, allowing us to handle
  * CSS/SCSS files in a custom way. Instead of actually loading the CSS,
  * we short-circuit the resolution and return a mock module.
- *
- * It also maps directory targets of import maps to their index file.
  *
  * @type {import('node:module').ResolveHook}
  */
@@ -28,23 +22,7 @@ export async function resolve(specifier, ctx, nextResolve) {
     };
   }
 
-  try {
-    return await nextResolve(specifier);
-  } catch (error) {
-    if (error.code !== 'ERR_UNSUPPORTED_DIR_IMPORT') {
-      throw error;
-    }
-
-    const index = indexFiles
-      .map(file => new URL(file, `${error.url}/`))
-      .find(url => existsSync(fileURLToPath(url)));
-
-    if (!index) {
-      throw error;
-    }
-
-    return nextResolve(index.href);
-  }
+  return nextResolve(specifier);
 }
 
 /**

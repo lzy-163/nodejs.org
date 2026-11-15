@@ -2,23 +2,22 @@
 
 import Select from '@node-core/ui-components/Common/Select';
 import { useTranslations } from 'next-intl';
-import { use, useEffect, useMemo } from 'react';
-
-import { ReleaseContext } from '#site/providers/releaseProvider';
-import { nextItem, PACKAGE_MANAGERS, parseCompat } from '#site/util/download';
-
-import type { PackageManager } from '#site/types/release';
+import { useContext, useEffect, useMemo } from 'react';
 import type { FC } from 'react';
 
+import { ReleaseContext } from '@/providers/releaseProvider';
+import type { PackageManager } from '@/types/release';
+import { nextItem, PACKAGE_MANAGERS, parseCompat } from '@/util/downloadUtils';
+
 const PackageManagerDropdown: FC = () => {
-  const release = use(ReleaseContext);
+  const release = useContext(ReleaseContext);
   const t = useTranslations();
 
   // We parse the compatibility of the dropdown items
   const parsedPackageManagers = useMemo(
     () => parseCompat(PACKAGE_MANAGERS, release),
     // We only want to react on the change of the Version
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [release.version]
   );
 
@@ -30,14 +29,14 @@ const PackageManagerDropdown: FC = () => {
         nextItem(release.packageManager, parsedPackageManagers)
       ),
     // We only want to react on the change of the Version
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [release.version, release.packageManager]
   );
 
   return (
     <Select<PackageManager>
       values={parsedPackageManagers}
-      value={release.packageManager}
+      defaultValue={release.packageManager}
       loading={release.os === 'LOADING' || release.installMethod === ''}
       ariaLabel={t('layouts.download.dropdown.packageManager')}
       onChange={manager => release.setPackageManager(manager)}

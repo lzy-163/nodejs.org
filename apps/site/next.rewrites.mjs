@@ -1,8 +1,7 @@
 'use strict';
 
-import { availableLocaleCodes } from '@node-core/website-i18n';
-
 import { siteRedirects } from './next.json.mjs';
+import { availableLocaleCodes } from './next.locales.mjs';
 
 // This allows us to prefix redirects with all available locale codes so that redirects are not bound to a single locale
 // This also transforms the locale itself as a matching group that can be used for rewrites

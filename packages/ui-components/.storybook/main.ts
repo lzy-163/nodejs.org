@@ -1,4 +1,8 @@
+import { createRequire } from 'node:module';
+
 import type { StorybookConfig } from '@storybook/react-webpack5';
+
+const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
   stories: ['../**/*.stories.tsx'],
@@ -7,18 +11,12 @@ const config: StorybookConfig = {
   core: { disableTelemetry: true, disableWhatsNewNotifications: true },
   framework: '@storybook/react-webpack5',
   swc: () => ({ jsc: { transform: { react: { runtime: 'automatic' } } } }),
-  // Storybook renders the components straight from `src`, so `#ui/*` must
-  // resolve to the uncompiled sources rather than to the published `dist` output
-  webpackFinal: async config => {
-    config.resolve ??= {};
-    config.resolve.conditionNames = ['source', '...'];
-
-    return config;
-  },
   addons: [
     '@storybook/addon-webpack5-compiler-swc',
+    '@storybook/addon-controls',
+    '@storybook/addon-interactions',
     '@storybook/addon-themes',
-    '@storybook/addon-a11y',
+    '@storybook/addon-viewport',
     {
       name: '@storybook/addon-styling-webpack',
       options: {
@@ -30,12 +28,13 @@ const config: StorybookConfig = {
               'style-loader',
               {
                 loader: 'css-loader',
-                options: {
-                  esModule: false,
-                  importLoaders: 1,
-                },
+                options: { importLoaders: 1 },
               },
-              'postcss-loader',
+              {
+                // Gets options from `postcss.config.js` in your project root
+                loader: 'postcss-loader',
+                options: { implementation: require.resolve('postcss') },
+              },
             ],
           },
         ],

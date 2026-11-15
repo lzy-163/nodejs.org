@@ -85,16 +85,13 @@ const resolveUrl = (item, version) => {
 const resolveDownloads = version => {
   let downloads = downloadOptions;
 
-  const satisfies = range =>
-    semVer.satisfies(version, range, { includePrerelease: true });
-
-  if (satisfies('< 16.0.0')) {
+  if (semVer.satisfies(version, '< 16.0.0')) {
     downloads = downloads.filter(
       ver => ver.title !== 'macOS Apple Silicon 64-bit Binary'
     );
   }
 
-  if (satisfies('< 19.9.0')) {
+  if (semVer.satisfies(version, '< 19.9.0')) {
     downloads = downloads.filter(
       ver =>
         ver.title !== 'Windows ARM 64-bit Installer' &&
@@ -102,16 +99,12 @@ const resolveDownloads = version => {
     );
   }
 
-  if (satisfies('>= 23.0.0')) {
+  if (semVer.satisfies(version, '>= 23.0.0')) {
     downloads = downloads.filter(
       ver =>
         ver.title !== 'Windows 32-bit Installer' &&
         ver.title !== 'Windows 32-bit Binary'
     );
-  }
-
-  if (satisfies('>= 24.0.0')) {
-    downloads = downloads.filter(ver => ver.title !== 'ARMv7 32-bit Binary');
   }
 
   return downloads;

@@ -1,41 +1,35 @@
 import Preview from '@node-core/ui-components/Common/Preview';
-
-import { getClientContext } from '#site/client-context';
-import AvatarGroup from '#site/components/AvatarGroup';
-import BlogCrossLinks from '#site/components/BlogCrossLinks';
-import EOLAlert from '#site/components/EOL/EOLAlert';
-import Footer from '#site/components/Footer';
-import MetaBar from '#site/components/MetaBar';
-import NavBar from '#site/components/NavBar';
-import { mapAuthorToCardAuthors } from '#site/util/author';
-import { mapBlogCategoryToPreviewType } from '#site/util/blog';
-
 import type { FC, PropsWithChildren } from 'react';
+
+import WithAvatarGroup from '@/components/withAvatarGroup';
+import WithBlogCrossLinks from '@/components/withBlogCrossLinks';
+import WithFooter from '@/components/withFooter';
+import WithMetaBar from '@/components/withMetaBar';
+import WithNavBar from '@/components/withNavBar';
+import { useClientContext } from '@/hooks/react-server';
+import { mapAuthorToCardAuthors } from '@/util/authorUtils';
+import { mapBlogCategoryToPreviewType } from '@/util/blogUtils';
 
 import styles from './layouts.module.css';
 
 const PostLayout: FC<PropsWithChildren> = ({ children }) => {
-  const { frontmatter } = getClientContext();
+  const { frontmatter } = useClientContext();
 
-  const authors = mapAuthorToCardAuthors(frontmatter.author!);
+  const authors = mapAuthorToCardAuthors(frontmatter.author);
 
-  const type = mapBlogCategoryToPreviewType(frontmatter.category!);
+  const type = mapBlogCategoryToPreviewType(frontmatter.category);
 
   return (
     <>
-      <NavBar />
+      <WithNavBar />
 
       <div className={styles.contentLayout}>
-        <div></div>
-
         <div className={styles.postLayout}>
-          <main id="main" tabIndex={-1}>
-            {type === 'vulnerability' && <EOLAlert />}
-
+          <main>
             <h1>{frontmatter.title}</h1>
 
             <section>
-              <AvatarGroup names={authors} size="medium" />
+              <WithAvatarGroup names={authors} size="medium" />
 
               <p>{authors.join(', ')}</p>
             </section>
@@ -44,14 +38,14 @@ const PostLayout: FC<PropsWithChildren> = ({ children }) => {
 
             {children}
 
-            <BlogCrossLinks />
+            <WithBlogCrossLinks />
           </main>
         </div>
 
-        <MetaBar />
+        <WithMetaBar />
       </div>
 
-      <Footer />
+      <WithFooter />
     </>
   );
 };

@@ -1,32 +1,29 @@
-import Article from '@node-core/ui-components/Containers/Article';
-
-import Breadcrumbs from '#site/components/Breadcrumbs';
-import Footer from '#site/components/Footer';
-import MetaBar from '#site/components/MetaBar';
-import NavBar from '#site/components/NavBar';
-import Sidebar from '#site/components/Sidebar';
-
 import type { FC, PropsWithChildren } from 'react';
+
+import WithBreadcrumbs from '@/components/withBreadcrumbs';
+import WithFooter from '@/components/withFooter';
+import WithMetaBar from '@/components/withMetaBar';
+import WithNavBar from '@/components/withNavBar';
+import WithSidebar from '@/components/withSidebar';
+import ArticleLayout from '@/layouts/Article';
 
 const AboutLayout: FC<PropsWithChildren> = ({ children }) => (
   <>
-    <NavBar />
+    <WithNavBar />
 
-    <Article>
-      <Sidebar navKeys={['about', 'getInvolved']} />
+    <ArticleLayout>
+      <WithSidebar navKeys={['about', 'getInvolved']} />
 
       <div>
-        <main id="main" tabIndex={-1}>
-          {children}
-        </main>
+        <main>{children}</main>
 
-        <MetaBar />
+        <WithMetaBar />
       </div>
 
-      <Breadcrumbs navKeys={['about', 'getInvolved']} />
-    </Article>
+      <WithBreadcrumbs navKeys={['about', 'getInvolved']} />
+    </ArticleLayout>
 
-    <Footer />
+    <WithFooter />
   </>
 );
 

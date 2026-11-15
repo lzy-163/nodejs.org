@@ -1,19 +1,61 @@
-import { JsWhite, Nodejs } from '#ui/Icons/Logos';
+import type { Meta as MetaObj, StoryObj } from '@storybook/react';
 
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
+import {
+  JsGreen,
+  JsWhite,
+  Nodejs,
+  NodejsStackedBlack,
+  NodejsStackedDark,
+  NodejsStackedLight,
+  NodejsStackedWhite,
+} from '@node-core/ui-components/Icons/Logos';
 
-export const NodejsLogos: StoryObj = {
+export const HorizontalLogo: StoryObj = {
+  render: () => <Nodejs width={267} height={80} />,
+};
+
+export const PrideLogo: StoryObj = {
+  render: () => <Nodejs variant="pride" width={267} height={80} />,
+};
+
+export const StackedLogos: StoryObj = {
   render: () => (
-    <div className="flex flex-col gap-6">
-      {(['default', 'pride'] as const).map(variant => (
-        <Nodejs key={variant} width={267} height={80} variant={variant} />
-      ))}
-      <div className="flex flex-row gap-4">
-        <JsWhite width={30} height={30} />
+    <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-2">
+        {[NodejsStackedDark, NodejsStackedBlack].map((Icon, index) => (
+          <Icon
+            key={index}
+            className="block dark:hidden"
+            width={267}
+            height={164}
+          />
+        ))}
+        {[NodejsStackedLight, NodejsStackedWhite].map((Icon, index) => (
+          <Icon
+            key={index}
+            className="hidden dark:block"
+            width={267}
+            height={164}
+          />
+        ))}
       </div>
     </div>
   ),
-  name: 'Node.js Logos',
+};
+
+export const JSSymbols: StoryObj = {
+  render: () => (
+    <div className="flex flex-row gap-4">
+      {[JsWhite, JsGreen].map((Icon, index) => (
+        <Icon
+          key={index}
+          className={index === 0 ? 'hidden dark:block' : 'block dark:hidden'}
+          width={30}
+          height={30}
+        />
+      ))}
+    </div>
+  ),
 };
 
 export default { title: 'Design System' } as MetaObj;
