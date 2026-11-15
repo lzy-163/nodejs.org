@@ -1,19 +1,28 @@
-import { Bluesky, Discord, GitHub, LinkedIn, Slack, X } from '#ui/Icons/Social';
+import type { Meta as MetaObj, StoryObj } from '@storybook/react';
 
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
+import {
+  Bluesky,
+  Discord,
+  GitHub,
+  LinkedIn,
+  Mastodon,
+  Slack,
+  X,
+} from '@node-core/ui-components/Icons/Social';
 
-const socialIcons = [[GitHub, LinkedIn], [Slack, X, Bluesky], [Discord]];
+const socialIcons = [
+  [GitHub, Mastodon, LinkedIn],
+  [Slack, X, Bluesky],
+  [Discord],
+];
 
 export const SocialMediaLogos: StoryObj = {
   render: () => (
     <div className="flex flex-row gap-4">
-      {socialIcons.map(group => (
-        <div
-          key={group.map(i => i.name || i.displayName).join()}
-          className="flex flex-col items-center gap-4"
-        >
-          {group.map(Icon => (
-            <Icon key={Icon.name || Icon.displayName} width={64} height={64} />
+      {socialIcons.map((group, idx) => (
+        <div key={idx} className="flex flex-col items-center gap-4">
+          {group.map((Icon, index) => (
+            <Icon key={index} width={64} height={64} />
           ))}
         </div>
       ))}

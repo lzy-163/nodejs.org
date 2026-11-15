@@ -3,28 +3,33 @@
 import { readFile } from 'node:fs/promises';
 import { join, normalize, sep } from 'node:path';
 
-import { availableLocaleCodes, defaultLocale } from '@node-core/website-i18n';
 import matter from 'gray-matter';
 import { cache } from 'react';
 import { VFile } from 'vfile';
 
-import compile from './mdx/compiler.mjs';
-import mdxComponents from './mdx/components.mjs';
-import { BASE_PATH } from './next.constants.mjs';
-import { BASE_URL } from './next.constants.mjs';
-import { DEFAULT_CATEGORY_OG_TYPE } from './next.constants.mjs';
-import { ENABLE_STATIC_EXPORT } from './next.constants.mjs';
-import { IS_DEV_ENV } from './next.constants.mjs';
-import { PAGE_METADATA } from './next.dynamic.constants.mjs';
+import {
+  BASE_PATH,
+  BASE_URL,
+  DEFAULT_CATEGORY_OG_TYPE,
+  ENABLE_STATIC_EXPORT,
+  IS_DEV_ENV,
+} from './next.constants.mjs';
+import {
+  DYNAMIC_ROUTES,
+  IGNORED_ROUTES,
+  PAGE_METADATA,
+} from './next.dynamic.constants.mjs';
 import { getMarkdownFiles } from './next.helpers.mjs';
 import { siteConfig } from './next.json.mjs';
+import { availableLocaleCodes, defaultLocale } from './next.locales.mjs';
+import { compile } from './next.mdx.compiler.mjs';
+import { MDX_COMPONENTS } from './next.mdx.components.mjs';
 
 // This is the combination of the Application Base URL and Base PATH
 const baseUrlAndPath = `${BASE_URL}${BASE_PATH}`;
 
 // This is a small utility that allows us to quickly separate locale from the remaining pathname
-const getPathname = (path = []) =>
-  Array.isArray(path) ? path.join('/') : path;
+const getPathname = (path = []) => path.join('/');
 
 // This maps a pathname into an actual route object that can be used
 // we use a platform-specific separator to split the pathname
@@ -55,10 +60,6 @@ const getDynamicRouter = async () => {
   // Keeps the map of pathnames to filenames
   const pathnameToFilename = new Map();
 
-  // Pre-compute the pages directory path to avoid Turbopack's overly broad
-  // file pattern analysis when using path.join() with dynamic segments
-  const pagesDirectory = join(process.cwd(), 'pages');
-
   const websitePages = await getMarkdownFiles(
     process.cwd(),
     `pages/${defaultLocale.code}`
@@ -81,13 +82,19 @@ const getDynamicRouter = async () => {
   });
 
   /**
-   * This method returns a list of all routes that exist
-   * Note: It will only match routes that have at least one pathname.
-
+   * This method returns a list of all routes that exist for a given locale
+   *
+   * @param {string} locale
    * @returns {Promise<Array<string>>}
    */
-  const getAllRoutes = async () =>
-    [...pathnameToFilename.keys()].filter(pathname => pathname.length);
+  const getRoutesByLanguage = async (locale = defaultLocale.code) => {
+    const shouldIgnoreStaticRoute = pathname =>
+      IGNORED_ROUTES.every(e => !e({ pathname, locale }));
+
+    return [...pathnameToFilename.keys()]
+      .filter(shouldIgnoreStaticRoute)
+      .concat([...DYNAMIC_ROUTES.keys()]);
+  };
 
   /**
    * This method attempts to retrieve either a localized Markdown file
@@ -105,7 +112,7 @@ const getDynamicRouter = async () => {
     // meaning that the route exists on the website and can be rendered
     if (pathnameToFilename.has(normalizedPathname)) {
       const filename = pathnameToFilename.get(normalizedPathname);
-      const filepath = normalize(`${pagesDirectory}/${locale}/${filename}`);
+      const filepath = join(process.cwd(), 'pages', locale, filename);
 
       // We verify if our Markdown cache already has a cache entry for a localized
       // version of this file, because if not, it means that either
@@ -181,7 +188,7 @@ const getDynamicRouter = async () => {
 
     // This compiles our MDX source (VFile) into a final MDX-parsed VFile
     // that then is passed as a string to the MDXProvider which will run the MDX Code
-    return compile(sourceAsVirtualFile, fileExtension, mdxComponents);
+    return compile(sourceAsVirtualFile, fileExtension, MDX_COMPONENTS);
   };
 
   // Creates a Cached Version of the MDX Compiler
@@ -212,10 +219,6 @@ const getDynamicRouter = async () => {
       ? `${siteConfig.title} — ${data.title}`
       : siteConfig.title;
 
-    pageMetadata.description = data.description
-      ? data.description
-      : siteConfig.description;
-
     // Default Twitter Title for the page
     pageMetadata.twitter.title = pageMetadata.title;
 
@@ -227,8 +230,7 @@ const getDynamicRouter = async () => {
     ];
 
     // Default canonical URL for the page
-    pageMetadata.alternates.canonical =
-      data.canonical ?? getUrlForPathname(locale, path);
+    pageMetadata.alternates.canonical = getUrlForPathname(locale, path);
 
     // Default alternate URL for the page in the default locale
     pageMetadata.alternates.languages['x-default'] = getUrlForPathname(
@@ -268,7 +270,7 @@ const getDynamicRouter = async () => {
   return {
     mapPathToRoute,
     getPathname,
-    getAllRoutes,
+    getRoutesByLanguage,
     getMDXContent,
     getMarkdownFile,
     getPageMetadata,

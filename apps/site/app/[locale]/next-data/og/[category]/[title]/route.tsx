@@ -1,24 +1,22 @@
 import HexagonGrid from '@node-core/ui-components/Icons/HexagonGrid';
 import JsWhiteIcon from '@node-core/ui-components/Icons/Logos/JsWhite';
-import { defaultLocale } from '@node-core/website-i18n';
 import { ImageResponse } from 'next/og';
 
-import { DEFAULT_CATEGORY_OG_TYPE } from '#site/next.constants.mjs';
+import { DEFAULT_CATEGORY_OG_TYPE } from '@/next.constants.mjs';
+import { defaultLocale } from '@/next.locales.mjs';
+import { hexToRGBA } from '@/util/hexToRGBA';
 
 // TODO: use CSS variables instead of absolute values
 const CATEGORY_TO_THEME_COLOUR_MAP = {
-  announcement: 'rgb(26, 63, 29)',
-  release: 'rgb(12, 123, 179)',
-  vulnerability: 'rgb(174, 95, 0)',
+  announcement: '#1a3f1d',
+  release: '#0c7bb3',
+  vulnerability: '#ae5f00',
 };
 
-type StaticParams = {
-  params: Promise<{
-    locale: string;
-    category: keyof typeof CATEGORY_TO_THEME_COLOUR_MAP;
-    title: string;
-  }>;
-};
+type Category = keyof typeof CATEGORY_TO_THEME_COLOUR_MAP;
+
+type DynamicStaticPaths = { locale: string; category: Category; title: string };
+type StaticParams = { params: Promise<DynamicStaticPaths> };
 
 // This is the Route Handler for the `GET` method which handles the request
 // for generating OpenGraph images for Blog Posts and Pages
@@ -31,25 +29,20 @@ export const GET = async (_: Request, props: StaticParams) => {
       ? CATEGORY_TO_THEME_COLOUR_MAP[params.category]
       : CATEGORY_TO_THEME_COLOUR_MAP[DEFAULT_CATEGORY_OG_TYPE];
 
-  const gridBackground = `radial-gradient(circle, ${categoryColour}, transparent)`;
+  const gridBackground = `radial-gradient(circle, ${hexToRGBA(categoryColour)}, transparent)`;
 
   return new ImageResponse(
-    <div tw="relative flex items-center justify-center bg-black w-[1200px] h-[600px]">
-      <HexagonGrid
-        style={{
-          background: gridBackground,
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-        }}
-      />
+    (
+      <div tw="relative flex items-center justify-center bg-black w-[1200px] h-[600px]">
+        <HexagonGrid style={{ background: gridBackground }} />
 
-      <div tw="absolute mx-auto flex max-w-xl flex-col text-center text-3xl font-semibold text-white">
-        <JsWhiteIcon width={71} height={80} tw="mx-auto" />
+        <div tw="absolute mx-auto flex max-w-xl flex-col text-center text-3xl font-semibold text-white">
+          <JsWhiteIcon width={71} height={80} tw="mx-auto" />
 
-        <h2>{params.title.slice(0, 100)}</h2>
+          <h2>{params.title.slice(0, 100)}</h2>
+        </div>
       </div>
-    </div>,
+    ),
     { width: 1200, height: 600 }
   );
 };

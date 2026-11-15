@@ -3,41 +3,30 @@
 import { CloudArrowDownIcon } from '@heroicons/react/24/outline';
 import Skeleton from '@node-core/ui-components/Common/Skeleton';
 import { useTranslations } from 'next-intl';
-import { use } from 'react';
-
-import Button from '#site/components/Common/Button';
-import { ReleaseContext } from '#site/providers/releaseProvider';
-import {
-  OS_NOT_SUPPORTING_INSTALLERS,
-  OperatingSystemLabel,
-} from '#site/util/download';
-import { getNodeDownloadUrl } from '#site/util/url';
-
+import { useContext } from 'react';
 import type { FC } from 'react';
+
+import Button from '@/components/Common/Button';
+import { ReleaseContext } from '@/providers/releaseProvider';
+import {
+  OperatingSystemLabel,
+  OS_NOT_SUPPORTING_INSTALLERS,
+} from '@/util/downloadUtils';
+import { getNodeDownloadUrl } from '@/util/getNodeDownloadUrl';
 
 // Retrieves the pure extension piece from the input string
 const getExtension = (input: string) => String(input.split('.').slice(-1));
 
 const PrebuiltDownloadButtons: FC = () => {
   const t = useTranslations();
-  const { release, os, platform } = use(ReleaseContext);
+  const { release, os, platform } = useContext(ReleaseContext);
 
   const installerUrl = platform
-    ? getNodeDownloadUrl({
-        versionWithPrefix: release.versionWithPrefix,
-        os,
-        platform,
-        kind: 'installer',
-      })
+    ? getNodeDownloadUrl(release.versionWithPrefix, os, platform, 'installer')
     : '';
 
   const binaryUrl = platform
-    ? getNodeDownloadUrl({
-        versionWithPrefix: release.versionWithPrefix,
-        os,
-        platform,
-        kind: 'binary',
-      })
+    ? getNodeDownloadUrl(release.versionWithPrefix, os, platform, 'binary')
     : '';
 
   return (

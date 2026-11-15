@@ -1,4 +1,4 @@
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
+import type { Meta as MetaObj, StoryObj } from '@storybook/react';
 
 export const Anchor: StoryObj = {
   render: () => (
@@ -73,26 +73,6 @@ export const HeadingsWithLinks: StoryObj = {
       <h6 id="heading-6">
         <a href="#heading-6">HTML Section Heading 6</a>
       </h6>
-    </main>
-  ),
-};
-
-export const BoldAndLinks: StoryObj = {
-  render: () => (
-    <main>
-      <p>
-        <strong>Bold text (should inherit normal text color)</strong>
-      </p>
-      <p>
-        <strong>
-          <a href="#">Bold green link (link inside bold)</a>
-        </strong>
-      </p>
-      <p>
-        <a href="#">
-          <strong>Bold green link (bold inside link)</strong>
-        </a>
-      </p>
     </main>
   ),
 };

@@ -1,12 +1,14 @@
-import type useDetectOS from '#site/hooks/useDetectOS';
-import type { Frontmatter } from '#site/types/frontmatter';
 import type { Heading } from '@vcarl/remark-headings';
 import type { ReadTimeResults } from 'reading-time';
 
-export type ClientSharedServerContext = {
-  frontmatter: Frontmatter;
+import type { useDetectOS } from '@/hooks';
+import type { LegacyFrontMatter } from '@/types/frontmatter';
+
+export interface ClientSharedServerContext
+  extends ReturnType<typeof useDetectOS> {
+  frontmatter: LegacyFrontMatter;
   headings: Array<Heading>;
   pathname: string;
   filename: string;
   readingTime: ReadTimeResults;
-} & ReturnType<typeof useDetectOS>;
+}

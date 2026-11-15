@@ -1,40 +1,30 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "dev": {
-      "dependsOn": [
-        "build:blog-data",
-        "@node-core/rehype-shiki#build",
-        "@node-core/remark-lint#build",
-        "@node-core/ui-components#build",
-        "@node-core/website-i18n#build"
-      ],
       "cache": false,
       "persistent": true,
       "env": [
-        "VERCEL",
+        "VERCEL_ENV",
         "VERCEL_URL",
+        "VERCEL_REGION",
         "NEXT_PUBLIC_STATIC_EXPORT",
         "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
         "NEXT_PUBLIC_BASE_URL",
         "NEXT_PUBLIC_DIST_URL",
         "NEXT_PUBLIC_DOCS_URL",
         "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
         "NEXT_PUBLIC_DATA_URL",
         "TURBO_CACHE",
-        "TURBO_TELEMETRY_DISABLED",
-        "TURBOPACK_STATS"
+        "TURBO_TELEMETRY_DISABLED"
       ]
     },
     "build": {
-      "dependsOn": [
-        "build:blog-data",
-        "@node-core/rehype-shiki#build",
-        "@node-core/remark-lint#build",
-        "@node-core/ui-components#build",
-        "@node-core/website-i18n#build"
-      ],
+      "dependsOn": ["^build"],
       "inputs": [
         "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
         "{app,components,layouts,pages,styles}/**/*.css",
@@ -44,37 +34,40 @@
       ],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
-        "VERCEL",
+        "VERCEL_ENV",
         "VERCEL_URL",
+        "VERCEL_REGION",
         "NEXT_PUBLIC_STATIC_EXPORT",
         "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
         "NEXT_PUBLIC_BASE_URL",
         "NEXT_PUBLIC_DIST_URL",
         "NEXT_PUBLIC_DOCS_URL",
         "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
         "NEXT_PUBLIC_DATA_URL",
         "TURBO_CACHE",
-        "TURBO_TELEMETRY_DISABLED",
-        "TURBOPACK_STATS",
-        "ENABLE_EXPERIMENTAL_COREPACK"
+        "TURBO_TELEMETRY_DISABLED"
       ]
     },
     "start": {
       "cache": false,
       "persistent": true,
       "env": [
-        "VERCEL",
+        "VERCEL_ENV",
         "VERCEL_URL",
+        "VERCEL_REGION",
         "NEXT_PUBLIC_STATIC_EXPORT",
         "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
         "NEXT_PUBLIC_BASE_URL",
         "NEXT_PUBLIC_DIST_URL",
         "NEXT_PUBLIC_DOCS_URL",
         "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
         "NEXT_PUBLIC_DATA_URL",
         "TURBO_CACHE",
-        "TURBO_TELEMETRY_DISABLED",
-        "TURBOPACK_STATS"
+        "TURBO_TELEMETRY_DISABLED"
       ]
     },
     "deploy": {
@@ -87,18 +80,20 @@
       ],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
-        "VERCEL",
+        "VERCEL_ENV",
         "VERCEL_URL",
+        "VERCEL_REGION",
         "NEXT_PUBLIC_STATIC_EXPORT",
         "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
         "NEXT_PUBLIC_BASE_URL",
         "NEXT_PUBLIC_DIST_URL",
         "NEXT_PUBLIC_DOCS_URL",
         "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
         "NEXT_PUBLIC_DATA_URL",
         "TURBO_CACHE",
-        "TURBO_TELEMETRY_DISABLED",
-        "TURBOPACK_STATS"
+        "TURBO_TELEMETRY_DISABLED"
       ]
     },
     "lint:js": {
@@ -113,6 +108,10 @@
       "inputs": ["{app,pages}/**/*.{md,mdx}", "*.{md,mdx}"],
       "outputs": [".eslintmdcache"]
     },
+    "lint:snippets": {
+      "inputs": ["{app,pages}/**/*.{md,mdx}", "*.{md,mdx}"],
+      "outputs": []
+    },
     "lint:css": {
       "inputs": ["{app,components,layouts,pages,styles}/**/*.css"],
       "outputs": [".stylelintcache"]
@@ -120,43 +119,17 @@
     "lint:fix": {
       "cache": false
     },
-    "lint:types": {
-      "dependsOn": ["build:blog-data"],
-      "cache": false
-    },
     "format": {
       "cache": false
     },
     "test:unit": {
-      "dependsOn": [
-        "build:blog-data",
-        "@node-core/rehype-shiki#build",
-        "@node-core/remark-lint#build",
-        "@node-core/ui-components#build",
-        "@node-core/website-i18n#build"
-      ],
       "inputs": [
         "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
         "*.{md,mdx,json,ts,tsx,mjs,yml}"
-      ],
-      "outputs": ["coverage/**", "junit.xml"]
-    },
-    "build:blog-data": {
-      "inputs": ["{pages}/**/*.{mdx,md}"],
-      "outputs": ["public/blog-data.json"],
-      "env": [
-        "VERCEL_URL",
-        "TURBO_CACHE",
-        "TURBO_TELEMETRY_DISABLED",
-        "TURBOPACK_STATS",
-        "ENABLE_EXPERIMENTAL_COREPACK"
       ]
-    },
-    "scripts:release-post": {
-      "cache": false
     }
   }
 }

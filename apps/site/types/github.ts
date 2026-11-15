@@ -1,4 +1,4 @@
-export type GitHubApiFile = {
+export interface GitHubApiFile {
   name: string;
   path: string;
   sha: string;
@@ -8,4 +8,4 @@ export type GitHubApiFile = {
   git_url: string;
   download_url: string;
   type: 'file' | 'dir';
-};
+}

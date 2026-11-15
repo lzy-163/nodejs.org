@@ -1,8 +1,5 @@
-${props.installMethod === 'VP' ?
-  '' :
-  `# Завантажує й установлює Yarn:
-corepack enable yarn`
-}
+# Завантажує й установлює Yarn:
+corepack enable yarn
 
 # Перевіряє версію Yarn:
 yarn -v

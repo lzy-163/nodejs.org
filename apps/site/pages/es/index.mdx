@@ -4,7 +4,7 @@ layout: home
 ---
 
 <section>
-  <WebsiteBadge section="index" />
+  <WithBadge section="index" />
 
   <div>
     <h1 className="special">Ejecuta JavaScript en cualquier parte</h1>
@@ -15,24 +15,29 @@ layout: home
 
   </div>
 
-  <div className="flex gap-4">
+  <div>
+    <WithNodeRelease status={['LTS']}>
+      {({ release }) => (
+        <>
+          <DownloadButton release={release}>Descargar Node.js (LTS)</DownloadButton>
+          <small>
+            Descarga Node.js <b>{release.versionWithPrefix}</b>
+            <sup title="Descarga un instalador de Node.js para tu plataforma">1</sup> con soporte a largo plazo.
+            Node.js también puede ser instalado a través de <Link href="/download">gestores de versiones</Link>.
+          </small>
+        </>
+      )}
+    </WithNodeRelease>
 
-    <div className="flex flex-col gap-2">
-      <Button kind="special" className="!hidden dark:!block" href="/download">Obtener Node.js®</Button>
-
-      <Button kind="primary" className="!block dark:!hidden" href="/download">Obtener Node.js®</Button>
-
-      <Button kind="secondary" className="!block" href="/about/eol">
-        <span>Obtener soporte de seguridad</span>
-        <br />
-        <small className="!text-xs">para versiones de Node.js sin soporte (EOL)</small>
-      </Button>
-
-      <div className="flex justify-center ml:mt-3">
-        <PartnersList sort="weight" />
-      </div>
-      <span className="text-center text-sm! text-neutral-800 dark:text-neutral-600 text-balance">Node.js se siente orgulloso por tener estos patrocinadores <Link href="/about/partners">y otros</Link>.</span>
-    </div>
+    <WithNodeRelease status={['Current']}>
+      {({ release }) => (
+        <small>
+          ¿Quieres nuevas funciones más pronto?
+          Consigue<b>Node.js <DownloadLink release={release}>{release.versionWithPrefix}</DownloadLink></b>
+          <sup title="Downloads a Node.js installer for your current platform">1</sup> en vez.
+        </small>
+      )}
+    </WithNodeRelease>
 
   </div>
 </section>
@@ -92,17 +97,17 @@ layout: home
 
     ```js displayName="Streams Pipeline"
     // streams.mjs
-    import { createReadStream, createWriteStream } from 'node:fs';
     import { pipeline } from 'node:stream/promises';
+    import { createReadStream, createWriteStream } from 'node:fs';
     import { createGzip } from 'node:zlib';
 
     // ensure you have a `package.json` file for this test!
-    await pipeline(
+    await pipeline
+    (
       createReadStream('package.json'),
       createGzip(),
       createWriteStream('package.json.gz')
     );
-
 
     // run with `node streams.mjs`
     ```
@@ -125,5 +130,7 @@ layout: home
     ```
 
   </div>
-  Aprenda más sobre lo que Node.js puede ofrecer con nuestros [Materiales de aprendizaje](/learn).
+
+Aprenda más sobre lo que Node.js puede ofrecer con nuestros [Materiales de aprendizaje](/learn).
+
 </section>

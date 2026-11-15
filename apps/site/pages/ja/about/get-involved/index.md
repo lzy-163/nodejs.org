@@ -11,14 +11,14 @@ Node.jsのコミュニティへの参加の仕方にはさまざまな方法が�
 
 - [`nodejs/node` GitHubリポジトリー](https://github.com/nodejs/node/issues)は、Node.jsのコア機能や問題の報告を行うための場所です。
 - [`nodejs/help` GitHubリポジトリー](https://github.com/nodejs/help/issues)でもNode.jsに関する質問を受け付けています。
-- Node.jsの[公式Discordサーバー](https://discord.gg/nodejs)ではNode.js開発者とチャットしたりNode.jsプロジェクトからのニュースを知ることができます。
+- Node.jsの[公式Discordサーバー](/discord)ではNode.js開発者とチャットしたりNode.jsプロジェクトからのニュースを知ることができます。
 - [Node.jsプロジェクトカレンダー](https://nodejs.org/calendar)では公開されている全ての会議を確認できます。
 
 ## 学習教材
 
 Node.jsについてもっと学びたい場合は、多数のリソースが利用できます。
 
-- Node.jsの[公式学習コンテンツ](https://nodejs.org/learn/)。
+- Node.jsの[公式学習資料](https://nodejs.org/ja/learn/)。
 - Node.jsの[公式APIリファレンス](https://nodejs.org/api/) 。
 - [NodeSchool.io](https://nodeschool.io/)ではインタラクティブなコマンドラインゲームを通してNode.jsのコンセプトを学べます。
 - [StackOverflowのNode.jsタグ](https://stackoverflow.com/questions/tagged/node.js)には有用なリソースを含んだスレッドがたくさんあります。
@@ -30,5 +30,4 @@ Node.jsについてもっと非公式に議論する場所を探しているの�
 
 - [Node Slackers](https://www.nodeslackers.com/)はNode.jsに特化したSlackコミュニティーです。
 - [OpenJSF Slack](https://slack-invite.openjsf.org/)はOpenJS財団のSlackワークスペースです。Node.jsに関連するチャンネルがいくつかあります。 _(チャンネル名が `#nodejs-` で始まるチャンネル)_
-- [r/node](https://www.reddit.com/r/node/)はNode.jsに関するサブレディットです。
 - `irc.libera.chat`の`#node.js`は[IRCクライアント](https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients)や[ウェブクライアント](https://kiwiirc.com/nextclient/)を使って利用できます。

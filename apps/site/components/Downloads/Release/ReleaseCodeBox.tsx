@@ -1,137 +1,100 @@
 'use client';
 
-import { highlightToHtml } from '@node-core/rehype-shiki/minimal';
 import AlertBox from '@node-core/ui-components/Common/AlertBox';
 import Skeleton from '@node-core/ui-components/Common/Skeleton';
 import { useTranslations } from 'next-intl';
-import { use, useMemo } from 'react';
-
-import CodeBox from '#site/components/Common/CodeBox';
-import LinkWithArrow from '#site/components/Common/LinkWithArrow';
-import Link from '#site/components/Link';
-import ReleaseAlertBox from '#site/components/ReleaseAlertBox';
-import {
-  ReleaseContext,
-  ReleasesContext,
-} from '#site/providers/releaseProvider';
-import { INSTALL_METHODS } from '#site/util/download';
-import createInterpreter from '#site/util/interpreter';
-
-import type { DownloadSnippet } from '#site/types/download';
-import type { ReleaseContextType } from '#site/types/release';
 import type { FC } from 'react';
+import { useContext, useMemo } from 'react';
+
+import CodeBox from '@/components/Common/CodeBox';
+import Link from '@/components/Link';
+import LinkWithArrow from '@/components/LinkWithArrow';
+import { createSval } from '@/next.jsx.compiler.mjs';
+import { ReleaseContext, ReleasesContext } from '@/providers/releaseProvider';
+import type { ReleaseContextType } from '@/types/release';
+import { INSTALL_METHODS } from '@/util/downloadUtils';
+import { highlightToHtml } from '@/util/getHighlighter';
 
 // Creates a minimal JavaScript interpreter for parsing the JavaScript code from the snippets
 // Note: that the code runs inside a sandboxed environment and cannot interact with any code outside of the sandbox
 // It also does not have access to any Global or Window objects, nor it can execute code on the end-user's browser
 // It also only allows a return statement for a string and it forces the return value to also be a string and only be used
 // by Shiki to render the highlighted syntax. Hence XSS attacks or JavaScript injections are not possible.
-const interpreter = createInterpreter({}, 'script');
+const interpreter = createSval({}, 'script');
 
-/**
- * Parses a snippet string using the interpreter with the given release context
- */
-const parseSnippet = (snippet: string, releaseContext: ReleaseContextType) => {
+const parseSnippet = (s: string, releaseContext: ReleaseContextType) => {
+  // Adds the release context to the interpreter context
   interpreter.import({ props: releaseContext });
-  interpreter.run(`exports.content = \`${snippet}\``);
-  return interpreter.exports.content;
+
+  // Evaluates the JavaScript code applying the release context to the code
+  interpreter.run(`exports.content = \`${s}\``);
+
+  // Sets the parsed raw string to be used by the JSX CodeBox
+  return String(interpreter.exports.content);
 };
 
-/**
- * Custom hook to handle snippet processing logic
- */
-const useSnippetProcessor = (
-  snippets: Array<DownloadSnippet>,
-  context: ReleaseContextType
-) => {
-  return useMemo(() => {
-    // Find relevant snippets
-    const installMethodSnippet = snippets.find(
-      ({ name }) => name === context.installMethod.toLowerCase()
-    );
-
-    const packageManagerSnippet = snippets.find(
-      ({ name }) => name === context.packageManager.toLowerCase()
-    );
-
-    // Only process if both snippets are available
-    if (!installMethodSnippet || !packageManagerSnippet) {
-      return '';
-    }
-
-    const verifyNodeSnippet = snippets.find(({ name }) => name === 'node');
-
-    const installCorepackSnippet =
-      context.packageManager !== 'NPM' &&
-      // Corepack is no longer distributed with Node.js v25
-      context.release.major >= 25 &&
-      snippets.find(({ name }) => name === 'corepack');
-
-    // Parse snippets individually, skipping those that render empty
-    const parsedContent = [
-      installMethodSnippet,
-      verifyNodeSnippet,
-      installCorepackSnippet,
-      packageManagerSnippet,
-    ]
-      .filter(Boolean)
-      .map(snippet =>
-        parseSnippet((snippet as DownloadSnippet).content, context)
-      )
-      .map(content => content.trim())
-      .filter(Boolean)
-      .join('\n\n');
-
-    // Convert to HTML using Shiki's highlighter
-    // This is faster than JSX rendering as it avoids React runtime overhead
-    return highlightToHtml(
-      parsedContent,
-      context.os === 'WIN' ? 'ps1' : 'bash'
-    );
-  }, [snippets, context]);
-};
-
-/**
- * Custom hook to get current platform information
- */
-const usePlatformInfo = (installMethod: string) => {
-  return useMemo(() => {
-    const platform = INSTALL_METHODS.find(
-      ({ value }) => value === installMethod
-    );
-
-    // Provide defaults for destructuring
-    return {
-      label: platform?.label || '',
-      url: platform?.url || '',
-      info: platform?.info || 'layouts.download.codeBox.platformInfo.default',
-      recommended: platform?.recommended || false,
-      exists: !!platform,
-    };
-  }, [installMethod]);
-};
-
-/**
- * ReleaseCodeBox component displays installation instructions based on platform and context
- */
 const ReleaseCodeBox: FC = () => {
-  const { snippets, releases } = use(ReleasesContext);
-  const context = use(ReleaseContext);
+  const { snippets } = useContext(ReleasesContext);
+  const { installMethod, os, packageManager, release } =
+    useContext(ReleaseContext);
+
   const t = useTranslations();
 
-  // Process platform information
-  const platformInfo = usePlatformInfo(context.installMethod);
+  // Retrieves the current platform (Dropdown Item) based on the selected platform value
+  const currentPlatform = useMemo(
+    () => INSTALL_METHODS.find(({ value }) => value === installMethod),
+    [installMethod]
+  );
 
-  // Process snippets
-  const parsedSnippets = useSnippetProcessor(snippets, context);
+  // Parses the snippets based on the selected platform, package manager, and release context
+  const parsedSnippets = useMemo(() => {
+    // Retrieves a snippet for the given Installation Method (aka Platform)
+    const installMethodSnippet = snippets.find(
+      ({ name }) => name === installMethod.toLowerCase()
+    );
 
-  // UI state calculations
-  const displayLanguage = context.os === 'WIN' ? 'PowerShell' : 'Bash';
-  const isLoading = context.os === 'LOADING' || context.installMethod === '';
+    // Retrieves a snippet for the given Package Manager to be bundled with the Platform snippet
+    const packageManagerSnippet = snippets.find(
+      ({ name }) => name === packageManager.toLowerCase()
+    );
+
+    // Prevents numerous recalculations of `sval` and `Shiki` when not necessary
+    // As we only want to parse the snippets when both the Platform and Package Manager snippets are available
+    if (installMethodSnippet && packageManagerSnippet) {
+      const content = parseSnippet(
+        // Bundles the Platform and Package Manager snippets
+        `${installMethodSnippet.content}\n${packageManagerSnippet.content}`,
+        // Passes a partial state of only the things we need to the parser
+        { release, os } as ReleaseContextType
+      );
+
+      // We use Shikis's `hast-util-to-html` to convert the highlighted code into plain HTML (Pretty much using Rehype)
+      // This is actually faster than using `hast-util-to-jsx-runtime` and then rendering the JSX
+      // As it requires React's runtime to interpolate and build these components dynamically
+      // Which also leads to a lot o GC being emitted. (Tested via Profiling)
+      return highlightToHtml(content, os === 'WIN' ? 'ps1' : 'bash');
+    }
+
+    return '';
+    // Only change to these specific properties which are relevant for the re-rendering of the CodeBox
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [release.versionWithPrefix, installMethod, os, packageManager]);
+
+  // Determines the code language based on the OS
+  const displayName = os === 'WIN' ? 'PowerShell' : 'Bash';
+
+  // Determines if the code box should render the skeleton loader
+  const renderSkeleton = os === 'LOADING' || installMethod === '';
+
+  // Defines fallbacks for the currentPlatform object
+  const {
+    label = '',
+    url = '',
+    info = 'layouts.download.codeBox.platformInfo.default',
+  } = currentPlatform ?? {};
 
   return (
-    <div className="mt-4 mb-6 flex flex-col gap-2">
-      {/* NoScript warning */}
+    <div className="mb-6 mt-4 flex flex-col gap-2">
       <noscript>
         <AlertBox
           title={t('components.common.alertBox.warning')}
@@ -140,7 +103,7 @@ const ReleaseCodeBox: FC = () => {
         >
           {t.rich('layouts.download.codeBox.noScriptDetected', {
             link: text => (
-              <Link href="/download/archive/current">
+              <Link href="/about/previous-releases#looking-for-latest-release-of-a-version-branch">
                 <b>{text}</b>
               </Link>
             ),
@@ -148,11 +111,19 @@ const ReleaseCodeBox: FC = () => {
         </AlertBox>
       </noscript>
 
-      {/* Release status alert */}
-      <ReleaseAlertBox release={context.release} releases={releases} />
+      {release.status === 'End-of-life' && (
+        <AlertBox
+          title={t('components.common.alertBox.warning')}
+          level="warning"
+          size="small"
+        >
+          {t.rich('layouts.download.codeBox.unsupportedVersionWarning', {
+            link: text => <Link href="/about/previous-releases/">{text}</Link>,
+          })}
+        </AlertBox>
+      )}
 
-      {/* Community platform notice */}
-      {platformInfo.exists && !platformInfo.recommended && (
+      {!currentPlatform || currentPlatform.recommended || (
         <AlertBox
           title={t('components.common.alertBox.info')}
           level="info"
@@ -162,22 +133,19 @@ const ReleaseCodeBox: FC = () => {
         </AlertBox>
       )}
 
-      {/* Code display with skeleton loading */}
-      <Skeleton loading={isLoading}>
-        <CodeBox language={displayLanguage} className="min-h-[19rem]">
-          {/* eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml */}
+      <Skeleton loading={renderSkeleton}>
+        <CodeBox language={displayName} className="min-h-[16.5rem]">
           <code dangerouslySetInnerHTML={{ __html: parsedSnippets }} />
         </CodeBox>
       </Skeleton>
 
-      {/* Platform info footer */}
       <span className="text-center text-xs text-neutral-800 dark:text-neutral-200">
-        <Skeleton loading={isLoading} hide={!platformInfo.exists}>
-          {t(platformInfo.info, { platform: platformInfo.label })}{' '}
+        <Skeleton loading={renderSkeleton} hide={!currentPlatform}>
+          {t(info, { platform: label })}{' '}
           {t.rich('layouts.download.codeBox.externalSupportInfo', {
-            platform: platformInfo.label,
+            platform: label,
             link: text => (
-              <LinkWithArrow href={platformInfo.url}>
+              <LinkWithArrow href={url}>
                 <b>{text}</b>
               </LinkWithArrow>
             ),

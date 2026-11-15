@@ -26,9 +26,7 @@ export default {
   plugins: [
     'stylelint-order',
     'stylelint-selector-bem-pattern',
-    // Stylelint resolves plugins with its own resolver, which cannot be told to
-    // prefer the `source` condition, so we point at the uncompiled source directly
-    './src/stylelint/one-utility-class-per-line.mjs',
+    './stylelint/one-utility-class-per-line.mjs',
   ],
   rules: {
     // Enforces Element Class Names to be camelCase
@@ -51,8 +49,6 @@ export default {
     'import-notation': 'string',
     // Allow the `@apply` at rule as its part of Tailwind
     'at-rule-no-deprecated': [true, { ignoreAtRules: CUSTOM_AT_RULES }],
-    // Tailwind utilities in the `@apply` prelude are not valid CSS syntax
-    'at-rule-prelude-no-invalid': [true, { ignoreAtRules: CUSTOM_AT_RULES }],
     'nodejs/one-utility-class-per-line': true,
     // We need complex `:not()` for headings with anchor
     'selector-not-notation': null,

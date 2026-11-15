@@ -2,41 +2,40 @@
 
 import Select from '@node-core/ui-components/Common/Select';
 import { useTranslations } from 'next-intl';
-import { use, useEffect, useMemo } from 'react';
-
-import { ReleaseContext } from '#site/providers/releaseProvider';
-import { nextItem, INSTALL_METHODS, parseCompat } from '#site/util/download';
-
-import type { InstallationMethod } from '#site/types/release';
+import { useContext, useEffect, useMemo } from 'react';
 import type { FC } from 'react';
 
+import { ReleaseContext } from '@/providers/releaseProvider';
+import type { InstallationMethod } from '@/types/release';
+import { nextItem, INSTALL_METHODS, parseCompat } from '@/util/downloadUtils';
+
 const InstallationMethodDropdown: FC = () => {
-  const release = use(ReleaseContext);
+  const release = useContext(ReleaseContext);
   const t = useTranslations();
 
   // We parse the compatibility of the dropdown items
   const parsedInstallMethods = useMemo(
     () => parseCompat(INSTALL_METHODS, release),
     // We only want to react on the change of the OS and Version
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [release.os, release.version]
   );
 
   // We group Platforms on the Platform Dropdown to provide the User
-  // understanding of what is recommended and what is not.
-  const groupedMethods = useMemo(
+  // understanding of what is recommended/official and what is not.
+  const grouppedMethods = useMemo(
     () => [
       {
-        label: t('layouts.download.dropdown.platformGroups.recommended'),
+        label: t('layouts.download.dropdown.platformGroups.official'),
         items: parsedInstallMethods.filter(({ recommended }) => recommended),
       },
       {
-        label: t('layouts.download.dropdown.platformGroups.community'),
+        label: t('layouts.download.dropdown.platformGroups.unofficial'),
         items: parsedInstallMethods.filter(({ recommended }) => !recommended),
       },
     ],
     // We only want to react on the change of the parsedPlatforms
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [parsedInstallMethods]
   );
 
@@ -47,15 +46,15 @@ const InstallationMethodDropdown: FC = () => {
     if (release.os !== 'LOADING' && release.installMethod === '') {
       const installationMethod =
         // Sets either the utmost recommended platform or the first non-disabled one
-        // Note that the first item of grouped platforms is always the recommended one
-        nextItem<InstallationMethod | ''>('', groupedMethods[0].items) ||
+        // Note that the first item of groupped platforms is always the recommended one
+        nextItem<InstallationMethod | ''>('', grouppedMethods[0].items) ||
         nextItem<InstallationMethod | ''>('', parsedInstallMethods);
 
       // This will never return an empty string as there should always be an item
       // when the OS has finished loading for a given installation method
       release.setInstallMethod(installationMethod as InstallationMethod);
     }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedInstallMethods, release.installMethod, release.os]);
 
   // We set the Platform to the next available platform when the current
@@ -69,19 +68,18 @@ const InstallationMethodDropdown: FC = () => {
       }
     },
     // We only want to react on the change of the OS and Version
-    // eslint-disable-next-line @eslint-react/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [release.os, release.version]
   );
 
   return (
     <Select<InstallationMethod | ''>
-      values={groupedMethods}
-      value={release.installMethod}
+      values={grouppedMethods}
+      defaultValue={release.installMethod}
       loading={release.os === 'LOADING' || release.installMethod === ''}
       ariaLabel={t('layouts.download.dropdown.platform')}
       onChange={platform => platform && release.setInstallMethod(platform)}
       className="min-w-28"
-      dropdownClassName="!max-h-none"
       inline={true}
     />
   );

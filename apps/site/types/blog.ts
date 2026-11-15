@@ -1,30 +1,28 @@
-import type { IntlMessageKeys } from './i18n';
-
 export type BlogPreviewType = 'announcements' | 'release' | 'vulnerability';
 export type BlogCategory = IntlMessageKeys<'layouts.blog.categories'>;
 
-export type BlogPost = {
+export interface BlogPost {
   title: string;
   author: string;
   username: string;
-  date: string;
+  date: Date;
   categories: Array<BlogCategory>;
   slug: string;
-};
+}
 
-export type BlogData = {
+export interface BlogData {
   posts: Array<BlogPost>;
   categories: Array<BlogCategory>;
-};
+}
 
-export type BlogPagination = {
+export interface BlogPagination {
   next: number | null;
   prev: number | null;
   pages: number;
   total: number;
-};
+}
 
-export type BlogPostsRSC = {
+export interface BlogPostsRSC {
   posts: Array<BlogPost>;
   pagination: BlogPagination;
-};
+}

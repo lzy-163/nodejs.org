@@ -1,21 +1,24 @@
-import { Link as LocalizedLink } from '#site/navigation.mjs';
+import type { FC, HTMLProps } from 'react';
 
-import type { FC, AnchorHTMLAttributes, ComponentProps } from 'react';
+import { Link as LocalizedLink } from '@/navigation.mjs';
 
-export type LinkProps =
-  | AnchorHTMLAttributes<HTMLAnchorElement>
-  | ComponentProps<typeof LocalizedLink>;
-
-const Link: FC<LinkProps> = ({ href, ...props }) => {
-  if (!href || /^https?:/.test(href as string)) {
-    return <a href={href as string} {...props} />;
+const Link: FC<HTMLProps<HTMLAnchorElement>> = ({
+  children,
+  href,
+  ...props
+}) => {
+  if (!href || href.toString().startsWith('http')) {
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    );
   }
 
   return (
-    <LocalizedLink
-      href={href}
-      {...(props as Omit<ComponentProps<typeof LocalizedLink>, 'href'>)}
-    />
+    <LocalizedLink href={href?.toString()} {...props}>
+      {children}
+    </LocalizedLink>
   );
 };
 

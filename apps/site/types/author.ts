@@ -1,12 +1,12 @@
-export type AuthorProps = {
+export interface AuthorProps {
   names?: Array<string>;
   usernames?: Array<string>;
   clickable?: boolean;
   container?: HTMLElement | null;
-};
+}
 
-export type Author = {
-  id: number;
+export interface Author {
+  id: string;
   name: string;
   website?: string;
-};
+}

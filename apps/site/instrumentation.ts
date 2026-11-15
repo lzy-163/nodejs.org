@@ -1,1 +1,5 @@
-export { register } from '#platform/instrumentation';
+import { registerOTel } from '@vercel/otel';
+
+export function register() {
+  registerOTel({ serviceName: 'nodejs-org' });
+}

@@ -1,48 +1,64 @@
-import { availableLocaleCodes, defaultLocale } from '@node-core/website-i18n';
+import type { MetadataRoute } from 'next';
 
 import {
   BASE_PATH,
   BASE_URL,
   EXTERNAL_LINKS_SITEMAP,
-} from '#site/next.constants.mjs';
-import { BLOG_DYNAMIC_ROUTES } from '#site/next.dynamic.constants.mjs';
-import { dynamicRouter } from '#site/next.dynamic.mjs';
-
-import type { MetadataRoute } from 'next';
+} from '@/next.constants.mjs';
+import { dynamicRouter } from '@/next.dynamic.mjs';
+import { availableLocaleCodes, defaultLocale } from '@/next.locales.mjs';
 
 // This is the combination of the Application Base URL and Base PATH
 const baseUrlAndPath = `${BASE_URL}${BASE_PATH}`;
 
-// All available alternate locales
-const nonDefaultLocales = availableLocaleCodes.filter(
-  l => l !== defaultLocale.code
-);
-
-const getFullPath = (r: string, l: string) =>
-  /^https?:\/\//.test(r) ? r : `${baseUrlAndPath}/${l}/${r}`;
-
-const getAlternatePaths = (r: string, locales: Array<string>) =>
-  Object.fromEntries(locales.map(l => [l, getFullPath(r, l)]));
-
 // This allows us to generate a `sitemap.xml` file dynamically based on the needs of the Node.js Website
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
-  // Gets a list of all statically available routes
-  const routes = await dynamicRouter.getAllRoutes();
+  const routes = await dynamicRouter.getRoutesByLanguage(defaultLocale.code);
+  const paths = [];
 
   const currentDate = new Date().toISOString();
 
-  const getSitemapEntry = (r: string, locales: Array<string> = []) => ({
-    url: getFullPath(r, defaultLocale.code),
-    lastModified: currentDate,
-    changeFrequency: 'always' as const,
-    alternates: { languages: getAlternatePaths(r, locales) },
-  });
+  for (const route of routes) {
+    const availableLocalesForRoute = [];
 
-  const staticPaths = routes.map(r => getSitemapEntry(r, nonDefaultLocales));
-  const blogPaths = BLOG_DYNAMIC_ROUTES.map(r => getSitemapEntry(`blog/${r}`));
-  const externalPaths = EXTERNAL_LINKS_SITEMAP.map(r => getSitemapEntry(r));
+    for (const locale of availableLocaleCodes.filter(
+      locale => locale !== defaultLocale.code
+    )) {
+      const markdownFile = await dynamicRouter.getMarkdownFile(locale, route);
+      const isAvailable = markdownFile.filename !== '';
+      if (isAvailable) {
+        availableLocalesForRoute.push(locale);
+      }
+    }
 
-  return [...staticPaths, ...blogPaths, ...externalPaths];
+    const alternatesPaths = availableLocalesForRoute.reduce(
+      (acc, locale) => ({
+        ...acc,
+        [locale]: `${baseUrlAndPath}/${locale}/${route}`,
+      }),
+      {}
+    );
+
+    paths.push({
+      url: `${baseUrlAndPath}/${defaultLocale.code}/${route}`,
+      lastModified: currentDate,
+      changeFrequency: 'always' as const,
+      alternates: {
+        languages: {
+          ...alternatesPaths,
+        },
+      },
+    });
+  }
+
+  return [
+    ...paths,
+    ...EXTERNAL_LINKS_SITEMAP.map(route => ({
+      url: route,
+      lastModified: currentDate,
+      changeFrequency: 'always' as const,
+    })),
+  ];
 };
 
 export default sitemap;

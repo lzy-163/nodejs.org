@@ -1,9 +1,11 @@
 'use strict';
 
-import { readFile, glob } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
 
-import { availableLocaleCodes } from '@node-core/website-i18n';
+import { glob } from 'glob';
+
+import { availableLocaleCodes } from '../../next.locales.mjs';
 
 /**
  * This method is used to generate the Node.js Website Download Snippets
@@ -18,12 +20,10 @@ export default async function generateDownloadSnippets() {
   const downloadSnippets = availableLocaleCodes.flatMap(async locale => {
     // We retrieve the full pathnames of all Blog Posts to read each file individually
     // Note that we get the files original language (Bash/PowerShell, etc)
-    const filenamesPromise = glob('**/*.bash', {
+    const filenames = await glob('**/*.bash', {
       root: process.cwd(),
       cwd: `snippets/${locale}/download`,
     });
-
-    const filenames = await Array.fromAsync(filenamesPromise);
 
     // Creates the base path for the snippets for Node to read from
     const basePath = join(process.cwd(), `snippets/${locale}/download`);
